@@ -1,0 +1,374 @@
+---
+title: "STATS 250 Lab 6"
+author: "Lab Dream Team"
+date: "Week of 3/1/2021"
+output:
+  html_document:
+    toc: true
+    toc_float: true
+    toc_collapsed: true
+    theme: lumen
+    css: assets/styles.css
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+source("shuffle_two_groups.R")
+```
+
+# Learning Objectives
+
+## Statistical Learning Objectives
+1. Get experience with randomization for two proportions
+1. Explore hypothesis testing and p-values
+
+## R Learning Objectives
+1. Learn how to create a "data frame" from scratch
+1. Learn how to perform simulations for two proportions
+
+## Functions covered in this lab
+1. `data.frame()`
+
+# Weekly Advice
+This is exam review: it will benefit you to do this before the exam and devote your full attention to it. We promise.
+<hr />
+
+**MAKE SURE YOU RUN THE `setup` CHUNK ON LINE 14**
+
+# Lab Tutorial
+
+## Setting Up the Background
+
+Let's revisit question 1 on Homework 5, this time learning how to perform the simulations ourselves in R.
+
+:::{.background}
+You are writing an article for a consumer magazine based on a survey of readers that asked about the reliability of household appliances. Of the 600 readers who owned a Brand A dishwasher, 198 required a service call during the past year. Only 80 service calls were reported by the 200 readers who owned a Brand B dishwasher. Let $p_{A}$ represent the service call rate for the population of all owners of Brand A dishwashers and $p_{B}$ represent the service call rate for the population of all owners of Brand B dishwashers.
+:::
+
+:::{.question}
+You want to determine if Brand A is more reliable than Brand B (that is, has a smaller proportion of owners calling for service). Write the hypotheses (in symbols) that you would use for the corresponding hypothesis test. We have written the parameter, $p_{A} - p{B}$ for you below to get you started.
+:::
+
+:::{.answer}
+$H_0$: $p_{A} - p_{B}$
+
+$H_a$: $p_{A} - p_{B}$
+:::
+
+Let's explore the data by making a frequency table. This will provide a summary of the study results.
+
+:::{.question}
+What is Group A and what is Group B? Think of your populations that you are studying!
+:::
+
+:::{.answer}
+- **Group A** is 
+- **Group B** is 
+:::
+
+:::{.question}
+What is success and what is failure? Think of how we are looking at the data - "success" should be what we are looking at. 
+:::
+
+:::{.answer}
+- **Success** is
+- **Failure** is
+:::
+
+Now let's fill in the table appropriately! Notice that we listed "Failure" first - this is because R will be sorting the rows in alphabetical order.
+
+|             | Group A | Group B | Total |
+|:-----------:|:-------:|:-------:|:-----:|
+| **Failure** |         |         |       |
+| **Success** |         |         |       |
+| **Total**   |         |         |       |
+
+:::{.question}
+What is the observed difference in sample proportions of success between Group A and Group B?
+:::
+
+:::{.answer}
+```{r diffPHatsObserved, error = T}
+# Use R as a calculator!
+
+```
+:::
+
+## Setting Up the Randomization
+
+Alright. We've got a nice starting place for the example from the homework. We have defined the hypotheses, defined success and failure, set up a two-way frequency table to summarize our data, and computed the difference in the observed sample proportions. Next we need to randomize the data so that we can determine if our difference in sample proportions is **unusual** or **not very unusual**.
+
+### Building a Data Frame
+
+When we read in a .csv file, we are converting this Excel-like file to what R calls a *data frame*. So we have been working with data frames in R all along! If we think about what we get when we load in `penguins.csv`, we might think about how we have rows and rows of observations. Each row represents a case (here, a penguin). We might think about how we have columns of variables, like `body_mass_g` and `species`. In a particular row, the information about that penguin's `body_mass_g` and `species` are filled in, so that we can easily access it. We want to create a data frame that represents our dishwasher scenario. We will use the function `data.frame()`.
+
+Let's visualize how this should look.
+
+Each row should represent a case. So each row should represent a sampled dishwasher. What information do we need to know about each dishwasher? We need to know whether it is from Group A (Brand A) or Group B (Brand B). We also need to know whether it is a Success ("had a service call") or a Failure ("did not have a service call"). 
+
+Thus we have two variables: group and result. 
+
+Going alphabetically, we will fill in the possible values for "group". We have 600 dishwashers in Group A and 200 dishwashers in Group B. We can use `rep()` to create this.
+
+```{r groupRepeat}
+groupRepeat <- c(rep("Group A", 600), rep("Group B", 200))
+```
+
+Next, we will fill in the possible values for "result". This is where we have to think a little harder. R has already created the first 600 rows as "Group A", so we will need to distinguish between the "Success" and "Failure" in these 600 rows. Here's the table for a quick refresher.
+
+|             | Group A   | Group B | Total |
+|:-----------:|:---------:|:-------:|:-----:|
+| **Failure** |    402    |   120   |  522  |
+| **Success** |    198    |    80   |  278  |
+| **Total**   |    600    |   200   |  800  |
+
+Of the first 600 rows, 402 of them are designated as "Failure" and 198 of them are designated as "Success"). Of the last 200 rows, 120 of them are designated as "Failure" and 80 of them are designated as "Success". 
+
+We will tell R all of these things, in order.
+
+```{r resultRepeat}
+resultRepeat <- c(
+  rep("Failure", 402), 
+  rep("Success", 198),
+  rep("Failure", 120), 
+  rep("Success", 80)
+)
+```
+
+One more thing before we build the data frame - don't forget `stringsAsFactors = TRUE`. We will add that as an argument when we build the data frame. 
+
+Are you ready to build that data frame?!
+
+```{r buildDataFrameExample}
+dishwashers <-data.frame(
+  # below is the 600 rows for Group A and 200 rows for Group B
+  "group" = c(rep("Group A", 600), rep("Group B", 200)),
+  
+  # below is the rate of Failure and Success
+  "result" = c(rep("Failure", 402), rep("Success", 198), # of the first 600 rows
+               rep("Failure", 120), rep("Success", 80)), # of the last 200 rows
+  
+  stringsAsFactors = TRUE) 
+
+```
+
+Let's check that the table in R is exactly the same as the table we have in our notes.
+
+```{r checkTable}
+table(dishwashers$result, dishwashers$group)
+```
+
+You can use the `addmargins()` function to add a total row and column (labeled "Sum") to the table:
+
+```{r checkTableMargins}
+addmargins(table(dishwashers$result, dishwashers$group))
+```
+
+### Computing the Statistic
+
+Let's use code to compute the value of the observed statistic by using our newly-created data frame.
+
+The first value to compute is the value of $\hat{p}_{1}$, the sample proportion of **Group A** dishwashers that **had a service call**. Notice two things about it: this dishwasher is both in Group A **and** of the Success category. 
+
+To find the observed sample proportion of Group A:
+- Find the rows that are **both** Group A **and** Success. 
+- Count up the number of these rows. 
+- Then divide by the total in Group A. 
+
+In R:
+- Recall the `==` "exactly equals" logical operator, which helps us find exactly what we are looking for. In order to find the **and** we will use the logical operator `&` which is read as "and". 
+- Use the `sum()` function to count up these rows.
+- Use the `sum()` function again to tell us how many are in Group A.
+
+Rinse and repeat for Group B. The code is below.
+
+```{r sampleProportions, error = T}
+proportion1 <- sum(dishwashers$group == "Group A" & dishwashers$result == "Success") / 
+  sum(dishwashers$group == "Group A")
+proportion2 <- sum(dishwashers$group == "Group B" & dishwashers$result == "Success") / 
+  sum(dishwashers$group == "Group B")
+
+proportion1
+proportion2
+```
+
+Finally, the observed statistic is found by subtracting the values.
+
+```{r valueOfStatistic}
+statistic <- proportion1 - proportion2
+statistic
+```
+
+## Running One Iteration
+
+First, we should set the seed.
+```{r setSeed}
+set.seed(2)
+```
+
+If we were to simulate the study by hand, we would label 522 yellow cards for Failure and 278 blue cards for Success. Then we would shuffle the deck, and deal 600 cards into the Group A bin and 200 cards into the Group B bin. We created a function called `shuffle_two_groups()` that will shuffle the cards for us.
+
+```{r shuffleTwoGroupsOnce}
+shuffle <- shuffle_two_groups(dishwashers)
+```
+
+Next we would count up the number of blue cards in each of the groups and compare their proportions. 
+
+```{r columnPropsShuffle, error = T}
+# count up the successes in Group A, then divide by the total in Group A
+shuffleProportion1 <- sum(shuffle$group == "Group A" & shuffle$result == "Success") / 
+  sum(shuffle$group == "Group A")
+
+# count up the successes in Group B, then divide by the total in Group B
+shuffleProportion2 <- sum(shuffle$group == "Group B" & shuffle$result == "Success") / 
+  sum(shuffle$group == "Group B")
+
+# find the value of the statistic from this shuffle
+shuffleStatistic <- shuffleProportion1 - shuffleProportion2
+
+# report the value of the statistic from this shuffle
+shuffleStatistic
+```
+
+If we were to repeat this simulation 1000 times, what value would we expect the shuffleStatistic to be? Let's find out. 
+
+## Running Many Simulations
+
+Now we will replicate this procedure 1000 times to get the results of our simulation.
+
+```{r simulation}
+# replicate this simulation 1000 times and assign it to simulationResults
+simulationResults <- replicate(1000, {
+  # shuffle the cards
+  shuffle <- shuffle_two_groups(dishwashers)
+  
+  # count up the successes in Group A, then divide by the total in Group A
+  shuffleProportion1 <- sum(shuffle$group == "Group A" & shuffle$result == "Success") /  
+    sum(shuffle$group == "Group A")
+  
+  # count up the successes in Group B, then divide by the total in Group B
+  shuffleProportion2 <- sum(shuffle$group == "Group B" & shuffle$result == "Success") / 
+    sum(shuffle$group == "Group B")
+
+  # find the value of the statistic from this shuffle
+  shuffleStatistic <- shuffleProportion1 - shuffleProportion2
+  
+  # report the value of the statistic from this shuffle
+  shuffleStatistic
+})
+```
+
+### Histogram of Simulation Results
+
+Let's make a histogram of our results, and draw a vertical line at our observed statistic of -0.07.
+
+```{r simulationHistogram}
+hist(simulationResults, 
+     main = "Histogram of 1000 Simulation Results",
+     xlab = "Simulated Statistics of the Difference in Proportions")
+
+# Draw a (v)ertical line at the value of the statistic on top of the histogram
+abline(v = statistic, col = "red")
+```
+
+### Finding the p-value
+
+To wrap up, let's compute the **p-value**, the proportion of simulations giving a result as extreme or more extreme than what we observed under the null hypothesis model.
+
+Our alternative hypothesis is that Brand A has a **lower** service call proportion, so "as extreme or more extreme" here is *less than* or equal to our observed statistic. Let's find the proportion of simulations that gave a proportion of correct guesses less than or equal to -0.07.
+
+```{r example1pval}
+sum(simulationResults <= statistic) / 1000
+```
+
+The p-value is 0.032. Is this *unusual* or *not very unusual*?
+
+So, we'll conclude that we have strong evidence in favor of the alternative hypothesis. That is, we have strong evidence to support that Brand A dishwashers have a smaller percentage of service calls when compared to Brand B. 
+
+## One More Example
+
+Let's now do Homework 5 Question 2, in a more streamlined fashion. 
+
+The Stanford University Heart Transplant Study was conducted to determine whether an experimental heart transplant program increased lifespan. For this question, we will consider that a patient's lifespan increased if they were alive five years later. Is the proportion of patients who received a heart transplant and are alive five years later **higher** than the proportion of patients who did not receive a heart transplant and are alive five years later?
+
+Of the 69 who received the transplant, 24 were still alive 5 years later and 45 were deceased 5 years later. Of the 34 who did not receive the transplant, 4 were still alive 5 years later and 30 were deceased 5 years later. 
+
+Definitions:
+**Group A** is
+**Group B** is
+**Success** is
+**Failure** is
+
+Table of values (watch the order - "Failure" is the *first* row!)
+
+|             | Group A | Group B | Total |
+|:-----------:|:-------:|:-------:|:-----:|
+| **Failure** |         |         |       |
+| **Success** |         |         |       |
+| **Total**   |         |         |       |
+
+You'll want to fill in ?? with the appropriate values based on the table you created above. Once you have filled in the values, you can run the chunk to create the data frame.
+
+```{r buildDataFrameExample2, error = T}
+transplant <-data.frame(
+  # below is the rows for Group A and rows for Group B
+  "group" = c(rep("Group A", ??), rep("Group B", ??)),
+  
+  # below is the rate of Failure and Success
+  "result" = c(rep("Failure", ??), rep("Success", ??), 
+               rep("Failure", ??), rep("Success", ??)), 
+  
+  stringsAsFactors = TRUE) 
+```
+
+There's only one thing to update in this code - the name of your data frame. We called it `transplant`. Update it in the code where you see the ??? then run the chunk.
+
+```{r computeTheStatistic, error = T}
+proportion1 <- sum(???$group == "Group A" & ???$result == "Success") /
+  sum(???$group == "Group A")
+proportion2 <- sum(???$group == "Group B" & ???$result == "Success") /
+  sum(???$group == "Group B")
+statistic <- proportion1 - proportion2
+```
+
+There's only one thing to update in this code - the name of your data frame. We called it `transplant`. Update it in the code where you see the ?? then run the chunk.
+
+```{r simulationExample2, error = T}
+# replicate this simulation 1000 times and assign it to simulationResults
+simulationResults <- replicate(1000, {
+  # shuffle the cards
+  shuffle <- shuffle_two_groups(???)
+  
+  # count up the successes in Group A, then divide by the total in Group A
+  shuffleProportion1 <- sum(shuffle$group == "Group A" & shuffle$result == "Success") / 
+    sum(shuffle$group == "Group A")
+  
+  # count up the successes in Group B, then divide by the total in Group B
+  shuffleProportion2 <- sum(shuffle$group == "Group B" & shuffle$result == "Success") / 
+    sum(shuffle$group == "Group B")
+  
+  # find the value of the statistic from this shuffle
+  shuffleStatistic <- shuffleProportion1 - shuffleProportion2
+
+  # report the value of the statistic from this shuffle
+  shuffleStatistic
+})
+
+```
+
+There's nothing to change or update in this code. Once you've correctly executed all the code above, this chunk will run and give the histogram.
+
+```{r simulationHistogramExample2}
+hist(simulationResults, 
+     main = "Histogram of 1000 Simulation Results",
+     xlab = "Simulated Statistics of the Difference in Proportions")
+
+# Draw a (v)ertical line at the value of the statistic on top of the histogram
+abline(v = statistic, col = "red")
+```
+
+You'll want to update this code to reflect the alternative hypothesis that we are testing. Replace the ?? with either <= or >= then run the chunk.
+
+```{r example2pval, error = T}
+sum(simulationResults ?? statistic) / 1000
+```

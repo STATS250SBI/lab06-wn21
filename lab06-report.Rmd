@@ -1,0 +1,184 @@
+---
+title: "STATS 250 Lab 6 Report"
+author: "YOUR NAME GOES HERE IN QUOTES"
+date: "TODAY'S DATE GOES HERE IN QUOTES"
+output:
+  html_document:
+    toc: true
+    toc_float: true
+    toc_collapsed: true
+    theme: lumen
+    css: assets/styles.css
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+source("shuffle_two_groups.R") # This imports the shuffle_two_groups() function
+set.seed(42) # Note setting the seed!!
+```
+
+# Instructions
+
+Welcome to Lab 6! Complete the following exercises designed to help you understand the simulation process for making inference about a population proportion. It is important that you keep your answers inside the ".answer" blocks. Do NOT delete the three colon blocks (:::) and keep your responses between them. Use the tutorial for help, and feel free to ask questions on Piazza or email your lab instructor.
+
+Depending on your instruction method (synchronous or asynchronous), complete the following exercises collaboratively.
+
+1. **Synchronous remote:** Work with your peers in breakout rooms during the synchronous lab.
+1. **Asynchronous remote:** Use Piazza for asynchronous collaboration.
+
+**Collaborators:** If applicable, replace this text with the names of anyone you collaborated with on this project.
+
+**NOTE:** If you perform a calculation in R and assign it a name but do not print the value in your knitted document, we reserve the right to deduct points.
+
+# Background
+
+:::{.background}
+Are students who transfer to U-M more likely to be from Michigan than non-transfer students?
+Imagine you're helping the Registrar's office to answer this question using data from the STATS 250 Student Survey.
+
+We took a random sample of 200 STATS 250 students who responded to the Student Survey, which asked them to tell us whether they were a transfer student, as well as their residency status (in-state vs. out-of-state/international).
+**Of the 200 sampled students, 32 transferred to U-M. 22 of those transfer students are in-state. 119 students in the sample are in-state.**
+
+Use this information to answer the below questions to address our research question: **"Is the proportion of transfer students who are from in state greater than the proportion of non-transfer students who are from in state, based on the information from the Stats 250 student survey?"**
+:::
+
+# Lab Assignment
+
+**Don't forget to run the setup chunk on line 14.**
+
+## Question 1
+:::{.question}
+State the hypotheses we want to test *using symbols*.
+:::
+
+:::{.answer}
+- $H_0$: *Replace this text with your null hypothesis*
+- $H_A$: *Replace this text with your alternative hypothesis*
+:::
+
+## Question 2
+:::{.question}
+Start by identifying our groups and define a success and a failure.
+:::
+
+:::{.answer}
+- **Group A** is
+- **Group B** is
+- A **success** is
+- A **failure** is 
+:::
+
+## Question 3
+::: {.question}
+Start by tabulating our observed data. Fill in the table below based on the information given in the background above.
+:::
+
+::: {.answer}
+
+|             | Group A | Group B | Total |
+|:-----------:|:-------:|:-------:|:-----:|
+| **Failure** |         |         |       |
+| **Success** |         |         |       |
+| **Total**   |         |         |       |
+
+:::
+
+## Question 4
+:::{.question}
+Build the data frame that is represented by your table above. Call this data frame `stats250_students`.
+:::
+
+:::{.answer}
+```{r question4, error = T}
+# Replace this comment with code required for Question 4. (Remember that this text is a comment, so R ignores it; you can delete it if you want.)
+
+```
+:::
+
+## Question 5
+
+:::{.question}
+Make a table of your newly created data frame `stats250_students` to verify that the table matches your answers in Question 3. If your table does not match, go back and rework Question 4 until it does match.
+:::
+
+:::{.answer}
+```{r question5, error = T}
+# Replace this comment with code required for Question 5. (Remember that this text is a comment, so R ignores it; you can delete it if you want.)
+
+```
+:::
+
+## Question 6
+:::{.question}
+Compute the observed value of the statistic, $\hat{p}_1 - \hat{p}_2$ using R as a calculator. 
+
+Remember that the syntax in between dollar signs in R Markdown is a way to make math look nice, not R syntax. If you give the value a name, don't forget to print the object so the value appears in your knitted document.
+:::
+
+:::{.answer}
+```{r question6, error = T}
+# Replace this comment with code required for Question 6. (Remember that this text is a comment, so R ignores it; you can delete it if you want.)
+
+```
+
+:::
+
+## Question 7
+:::{.question}
+Use the `replicate()` function to run the simulation 100 times, making sure to assign your results a name. 
+:::
+
+:::{.answer}
+```{r question7, error = T}
+# Replace this comment with code required for Question 7. (Remember that this text is a comment, so R ignores it; you can delete it if you want.)
+
+```
+:::
+
+## Question 8 
+:::{.question}
+Make a histogram of your simulation results from Question 7, with an appropriate title and axis labels. Draw a vertical line at the observed value of the statistic, $\hat{p}_1 - \hat{p}_2$ that was found in Question 6.
+:::
+
+:::{.answer}
+```{r question8, error = T}
+# Replace this comment with code required for Question 8. (Remember that this text is a comment, so R ignores it; you can delete it if you want.)
+
+```
+:::
+
+## Question 9
+:::{.question}
+Compute the p-value, the proportion of simulated results as extreme or more extreme (in the direction of the alternative hypothesis) than the observed value of the statistic, $\hat{p}_1 - \hat{p}_2$.
+:::
+
+:::{.answer}
+```{r question9, error = T}
+# Replace this comment with code required for Question 9. (Remember that this text is a comment, so R ignores it; you can delete it if you want.)
+
+```
+:::
+
+# Wrap-Up and Submission
+
+At the top of the document, make sure you've changed the `author` field to your name (in quotes!). If you'd like, change the date as well.
+
+When you've finished the lab, click the **Knit** button one last time.
+
+## Submission instructions
+
+### If you're using RStudio Cloud
+
+1.  In the Files pane, check the box next to `lab06-report.html`.
+2.  Click More \> Export...
+3.  Click Download and save the file on your computer in a folder you'll remember and be able to find later. You can just call the file `lab06-report.html` or whatever else you'd like (as long as you remember what you called it).
+
+### If you're using RStudio installed on your computer
+
+1.  locate the `lab06-report.html` file on your computer. The file will be saved in the location indicated at the top of the files pane.
+
+### Submission to Canvas
+
+1.  Click the "Assignments" panel on the left side of the page. Scroll to find "Lab 6", and open the assignment. Click "Submit Assignment".
+2.  Towards the bottom of the page, you'll be able to choose `lab06-report.html` from the folder you saved it in from RStudio Cloud or noted if you're using RStudio Desktop. **You will only be able to upload a .html file -- do not upload any other file type.**
+3.  Click "Submit Assignment". You're done!
